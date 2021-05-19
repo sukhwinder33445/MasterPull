@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Give git branch repo path as param
+# If not param given, .sh file  path as default path
+
 REPOSITORIES=`pwd`
 
 if [ "$1" != "" ]
