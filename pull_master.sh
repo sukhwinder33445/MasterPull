@@ -9,20 +9,19 @@ fi
 
 NL=$'\n'
 
-for REPO in `ls "$REPOSITORIES/"`
+for REPO in "$REPOSITORIES"/*
 do
-  if [ -d "$REPOSITORIES/$REPO" ]
+  if [ -d "$REPO" ]
   then
-    echo "$NL ######################### $NL $NL"
-    echo "Updating $REPO at `date`"
-    if [ -d "$REPOSITORIES/$REPO/.git" ]
+    echo "$NL ######################### $NL"
+    echo "Updating $(echo $REPO | rev | cut -d'/' -f-1 | rev) at $(date)"
+    if [ -d "$REPO/.git" ]
     then
-      cd "$REPOSITORIES/$REPO"
-      OUTPUT=$(git status)
-      BRANCH=${OUTPUT%%$'\n'*}
-      echo "$BRANCH"
+      cd "$REPO"
+      BRANCH=$(git rev-parse --abbrev-ref HEAD)
+      echo "On branch $BRANCH"
       echo "Fetching master"
-      if [ "$BRANCH" = "On branch master" ]
+      if [ "$BRANCH" = "master" ]
       then
         git pull  
       else
@@ -31,7 +30,9 @@ do
     else
       echo "Skipping because it doesn't look like it has a .git folder."
     fi
-    echo "Done at `date`"
+    echo "Done at $(date)"
     echo
+  else
+    echo "$REPO : No such file or directory"
   fi
 done
