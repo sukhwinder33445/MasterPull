@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Give git branch repo path as param
-# If not param given, .sh file  path as default path
+# Give git repo path as param
+# If no param given, .sh file path is default path
 
 REPOSITORIES=`pwd`
 
