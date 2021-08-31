@@ -14,6 +14,7 @@ NL=$'\n'
 
 for REPO in "$REPOSITORIES"/*
 do
+  TO_FETCH_BRANCH='master'
   if [ -d "$REPO" ]
   then
     echo "$NL ######################### $NL"
@@ -21,14 +22,20 @@ do
     if [ -d "$REPO/.git" ]
     then
       cd "$REPO"
-      BRANCH=$(git rev-parse --abbrev-ref HEAD)
-      echo "On branch $BRANCH"
-      echo "Fetching master"
-      if [ "$BRANCH" = "master" ]
+      CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+      echo "On branch $CURRENT_BRANCH"
+      BRANCHES=$(git branch)
+
+      if [[ $BRANCHES =~ .*main* ]]
       then
-        git pull  
+        TO_FETCH_BRANCH='main'
+      fi
+      echo "Fetching branch $TO_FETCH_BRANCH"
+      if [ "$CURRENT_BRANCH" = "$TO_FETCH_BRANCH" ]
+      then
+        git pull
       else
-        git fetch origin master:master
+        git fetch origin "$TO_FETCH_BRANCH":"$TO_FETCH_BRANCH"
       fi
     else
       echo "Skipping because it doesn't look like it has a .git folder."
