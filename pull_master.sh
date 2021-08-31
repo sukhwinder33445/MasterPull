@@ -24,16 +24,18 @@ SKIP=()
 for REPO in "$REPOSITORIES"/*
 do
   TO_FETCH_BRANCH='master'
+  
   if [ -d "$REPO" ]; then
     REPO_SHORT=$(echo $REPO | rev | cut -d'/' -f-1 | rev)
     echo "$NEW_LINE ######## | $REPO_SHORT | ########"
     echo "Updating at $(date)"
+    
     if [ -d "$REPO/.git" ]; then
       cd "$REPO"
       CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
       echo "On branch $CURRENT_BRANCH"
       BRANCHES=$(git branch)
-
+      
       if [[ $BRANCHES =~ .*main* ]]; then
         TO_FETCH_BRANCH='main'
       fi
