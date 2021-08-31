@@ -1,17 +1,7 @@
 #!/bin/bash
 
-# Give git repo path as param
-# If no param given, .sh file path is default path
-
-REPOSITORIES=`pwd`
-
-if [ "$1" != "" ]
-then
-  REPOSITORIES=$1
-fi
-
 # constants
-NEW_LINE=$'\n' #
+NEW_LINE=$'\n'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -21,10 +11,24 @@ NO_COLOR='\033[0m' # To remove color
 FAILED=()
 SKIP=()
 
+# Give git repo path as param OR enter path in pathinfo file
+# If no param given, .sh file path is default path
+REPOSITORIES=`pwd`
+
+REPOS_PATH=$(cat "$REPOSITORIES/fileinfo") # if no file found, default path will be used
+
+if [ "$1" != "" ]; then
+  REPOSITORIES=$1
+elif [ "$REPOS_PATH" != "" ]; then
+  REPOSITORIES=$REPOS_PATH
+fi
+echo "$NEW_LINE Updating git repos in path: $REPOSITORIES $NEW_LINE"
+
+
 for REPO in "$REPOSITORIES"/*
 do
   TO_FETCH_BRANCH='master'
-  if [ -d "$REPO" ]; then
+  if [ -d "$REPO" ]; then # -d checks if the given param is a directory
     REPO_SHORT=$(echo $REPO | rev | cut -d'/' -f-1 | rev)
     echo "$NEW_LINE ######## | $REPO_SHORT | ########"
     echo "Updating at $(date)"
@@ -57,11 +61,11 @@ do
       SKIP+=($REPO_SHORT)
     fi
   else
-    echo "$REPO : No such file or directory"
+    echo -e "${YELLOW}$(echo $REPO | rev | cut -d'/' -f-1 | rev) is not a directory${NO_COLOR}"
   fi
 done
 
-echo "$NEW_LINE ######## ~ Summary ~ ######## $NEW_LINE"
+echo "$NEW_LINE ######## ~ Update complete ~ ######## $NEW_LINE"
 if [[ ${#SKIP[*]} != 0 ]]; then
     echo -e "${YELLOW}Skipped Repos:${NO_COLOR}"
     echo "${SKIP[*]}"
